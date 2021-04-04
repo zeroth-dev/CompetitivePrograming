@@ -1,25 +1,37 @@
 #include <fstream>
 #include <algorithm>
 #include "Functions.hpp"
+#include "Networking.hpp"
 
 pair < vector<string>, vector<string>> processFasta(istream &istr);
-int main() {
-
-
-    std::string filename = "D:\\Competitive programming\\CompetitivePrograming\\Rosalind\\datasets\\rosalind_mprt.txt";
-   
+int main(int argc, char** argv) {
+    std::string filename;
+    if (argc == 1)
+        filename = "../datasets/rosalind_mprt.txt";
+    else if (argc == 2)
+        filename = argv[1];
+    else{
+            cerr << "Provide only input file as argument." << endl;
+            return -1;
+        }
     // open file for reading
     std::ifstream istrm(filename, std::ios::binary);
     if (!istrm.is_open()) {
         std::cout << "failed to open " << filename << '\n';
     }
     else {
-        vector<string> ids, dnaseq;
-        auto processed = processFasta(istrm);
-        ids = processed.first;
-        dnaseq = processed.second;
-        dnaseq[0][83] = ' ';
-        cout << dnaseq[0];
+        vector<string> ids;
+        std::string id;
+        const std::string base = "https://www.uniprot.org/uniprot/";
+        while(istrm >> id){
+            ids.push_back(id);
+        }
+        for(auto it : ids){
+            int a=0;
+            std::string website = base + it + ".fasta";
+            std::cout << website << std::endl;
+            auto proteinInfo = uniprotDownload(website.c_str());
+        }
     }
     istrm.close();
 	return 0;

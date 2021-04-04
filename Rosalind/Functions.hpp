@@ -5,6 +5,7 @@
 #include <string>
 #include <queue>
 #include <algorithm>
+#include <math.h>
 using namespace std;
 
 uint64_t NcK(int n, int k) {
