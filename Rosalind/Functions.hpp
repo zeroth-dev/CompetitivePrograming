@@ -6,6 +6,7 @@
 #include <queue>
 #include <algorithm>
 #include <math.h>
+#include <regex>
 using namespace std;
 
 uint64_t NcK(int n, int k) {
@@ -17,6 +18,24 @@ uint64_t NcK(int n, int k) {
         answer /= i;
     }
     return answer;
+}
+
+
+uint64_t fact(int n){
+    if(n <= 1){
+        return 1;
+    }else{
+        return n * fact(n-1);
+    }
+}
+
+/// Given a map from keys to values, creates a new map from values to keys 
+template<typename K, typename V>
+static map<V, K> reverse_map(const map<K, V>& m) {
+    map<V, K> r;
+    for (const auto& kv : m)
+        r[kv.second] = kv.first;
+    return r;
 }
 
 double binomialProbability(int n, int k, double p) {
@@ -151,6 +170,10 @@ double dominantProb(int n, int m, int k) {
 
 map<string, string> RNACodon;
 void initRNACodon(); 
+std::map<std::string, std::string> DNACodon;
+void initDNACodon(); 
+std::map<std::string, double> AminoMassTable;
+void initAminoMassTable();
 string RNA2prot(string RNA) {
     string prot = "";
     initRNACodon();
@@ -243,7 +266,120 @@ vector<pair<int, int>> adjacencyO3(vector<string> dnaseq) {
     return adjacencyList;
 }
 
-// Regex exercise 
+// TODO:
+// Construct regex based on bioinf text
+
+std::vector<int> findMotifs(std::string dna, std::string motif){
+    std::regex rgx(motif);
+    std::vector<int> positions;
+    for(std::sregex_iterator it (dna.begin(), dna.end(), rgx), it_end; it != it_end; it++){
+        positions.push_back(it->position()+1);
+    }
+    return positions;
+}
+
+int RNACombinations(std::string protein){
+    std::map <std::string, int> numberOfCombinations;
+    initRNACodon();
+
+    for (auto it : RNACodon){
+        if (numberOfCombinations.find(it.second) == numberOfCombinations.end()){
+            numberOfCombinations.insert({it.second, 1});
+        }else{
+            numberOfCombinations[it.second]++;
+        }
+    } 
+
+    int combo = 1;
+    int milion = 1000000;
+    for(auto codon : protein){
+        
+        combo*=numberOfCombinations[std::string(1, codon)];
+        combo%= milion;
+    }
+    combo*=numberOfCombinations["Stop"];
+    combo%=milion;
+    return combo;
+}
+
+
+std::vector<std::vector<int>> allPermutations(int n){
+    uint64_t permutations = fact(n);
+    std::cout << permutations <<std::endl;
+
+    std::vector<int> currentPermutation;
+    std::vector<std::vector<int>> allPermutations;
+    for(int i = 1; i <=n; i++){
+        currentPermutation.push_back(i);
+    }
+    do{
+        allPermutations.push_back(currentPermutation);
+    }while(std::next_permutation(currentPermutation.begin(), currentPermutation.end()));
+
+    return allPermutations;
+}
+
+double proteinMass(std::string protein){
+    initAminoMassTable();
+    double totalMass = 0;
+    for (auto aminoAcid : protein){
+        totalMass+=AminoMassTable[std::string(1, aminoAcid)];
+    }
+    // Total mass is te sum of masses of amino acids plus a single molecule of water
+    //totalMass+=AminoMassTable["H2O"];
+    return totalMass;
+}
+
+std::vector<std::pair<int, int>> findReversePalin(std::string DNA){
+    std::vector<std::pair<int, int>> result;
+    for(int i = 0; i < DNA.size(); i++){
+        for(int j = 4; j <=12 && i+j-1 < DNA.size(); j++){
+            std::string temp = "";
+            for(int k = 0; k < j; k++){
+                temp.push_back(DNA[i+k]);
+            }
+            if(temp == reverseComplementDNA(temp)) result.push_back({i+1, j}); 
+        }
+    }
+    return result;
+}
+
+
+void initAminoMassTable(){
+
+    AminoMassTable.insert({"A", 71.03711});     AminoMassTable.insert({"C", 103.00919});
+    AminoMassTable.insert({"D", 115.02694});    AminoMassTable.insert({"E", 129.04259});
+    AminoMassTable.insert({"F", 147.06841});    AminoMassTable.insert({"G", 57.02146});
+    AminoMassTable.insert({"H", 137.05891});    AminoMassTable.insert({"I", 113.08406});
+    AminoMassTable.insert({"K", 128.09496});    AminoMassTable.insert({"L", 113.08406});
+    AminoMassTable.insert({"M", 131.04049});    AminoMassTable.insert({"N", 114.04293});
+    AminoMassTable.insert({"P", 97.05276});     AminoMassTable.insert({"Q", 128.05858});
+    AminoMassTable.insert({"R", 156.10111});    AminoMassTable.insert({"S", 87.03203});
+    AminoMassTable.insert({"T", 101.04768});    AminoMassTable.insert({"V", 99.06841});
+    AminoMassTable.insert({"W", 186.07931});    AminoMassTable.insert({"Y", 163.06333});
+    AminoMassTable.insert({"H2O", 18.01056});                  
+
+}
+
+void initDNACodon(){
+    DNACodon.insert({ "TTT", "F" });    DNACodon.insert({ "CTT", "L" }); DNACodon.insert({ "ATT", "I" }); DNACodon.insert({ "GTT", "V" });
+    DNACodon.insert({ "TTC", "F" });    DNACodon.insert({ "CTC", "L" }); DNACodon.insert({ "ATC", "I" }); DNACodon.insert({ "GTC", "V" });
+    DNACodon.insert({ "TTA", "L" });    DNACodon.insert({ "CTA", "L" }); DNACodon.insert({ "ATA", "I" }); DNACodon.insert({ "GTA", "V" });
+    DNACodon.insert({ "TTG", "L" });    DNACodon.insert({ "CTG", "L" }); DNACodon.insert({ "ATG", "M" }); DNACodon.insert({ "GTG", "V" });
+    DNACodon.insert({ "TCT", "S" });    DNACodon.insert({ "CCT", "P" }); DNACodon.insert({ "ACT", "T" }); DNACodon.insert({ "GCT", "A" });
+    DNACodon.insert({ "TCC", "S" });    DNACodon.insert({ "CCC", "P" }); DNACodon.insert({ "ACC", "T" }); DNACodon.insert({ "GCC", "A" });
+    DNACodon.insert({ "TCA", "S" });    DNACodon.insert({ "CCA", "P" }); DNACodon.insert({ "ACA", "T" }); DNACodon.insert({ "GCA", "A" });
+    DNACodon.insert({ "TCG", "S" });    DNACodon.insert({ "CCG", "P" }); DNACodon.insert({ "ACG", "T" }); DNACodon.insert({ "GCG", "A" });
+    DNACodon.insert({ "TAT", "Y" });    DNACodon.insert({ "CAT", "H" }); DNACodon.insert({ "AAT", "N" }); DNACodon.insert({ "GAT", "D" });
+    DNACodon.insert({ "TAC", "Y" });    DNACodon.insert({ "CAC", "H" }); DNACodon.insert({ "AAC", "N" }); DNACodon.insert({ "GAC", "D" });
+    DNACodon.insert({ "TAA", "Stop" }); DNACodon.insert({ "CAA", "Q" }); DNACodon.insert({ "AAA", "K" }); DNACodon.insert({ "GAA", "E" });
+    DNACodon.insert({ "TAG", "Stop" }); DNACodon.insert({ "CAG", "Q" }); DNACodon.insert({ "AAG", "K" }); DNACodon.insert({ "GAG", "E" });
+    DNACodon.insert({ "TGT", "C" });    DNACodon.insert({ "CGT", "R" }); DNACodon.insert({ "AGT", "S" }); DNACodon.insert({ "GGT", "G" });
+    DNACodon.insert({ "TGC", "C" });    DNACodon.insert({ "CGC", "R" }); DNACodon.insert({ "AGC", "S" }); DNACodon.insert({ "GGC", "G" });
+    DNACodon.insert({ "TGA", "Stop" }); DNACodon.insert({ "CGA", "R" }); DNACodon.insert({ "AGA", "R" }); DNACodon.insert({ "GGA", "G" });
+    DNACodon.insert({ "TGG", "W" });    DNACodon.insert({ "CGG", "R" }); DNACodon.insert({ "AGG", "R" }); DNACodon.insert({ "GGG", "G" });
+    
+}
 
 void initRNACodon() {
 

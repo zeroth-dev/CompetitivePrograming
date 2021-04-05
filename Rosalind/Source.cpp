@@ -1,5 +1,6 @@
 #include <fstream>
 #include <algorithm>
+#include <istream>
 #include "Functions.hpp"
 #include "Networking.hpp"
 
@@ -7,7 +8,7 @@ pair < vector<string>, vector<string>> processFasta(istream &istr);
 int main(int argc, char** argv) {
     std::string filename;
     if (argc == 1)
-        filename = "../datasets/rosalind_mprt.txt";
+        filename = "../datasets/rosalind_mrna.txt";
     else if (argc == 2)
         filename = argv[1];
     else{
@@ -20,26 +21,18 @@ int main(int argc, char** argv) {
         std::cout << "failed to open " << filename << '\n';
     }
     else {
-        vector<string> ids;
-        std::string id;
-        const std::string base = "https://www.uniprot.org/uniprot/";
-        while(istrm >> id){
-            ids.push_back(id);
-        }
-        for(auto it : ids){
-            int a=0;
-            std::string website = base + it + ".fasta";
-            std::cout << website << std::endl;
-            auto proteinInfo = uniprotDownload(website.c_str());
-        }
+        std::string codon;
+        istrm >> codon;
+        std::cout << RNACombinations(codon) << std::endl;
+        
     }
     istrm.close();
 	return 0;
 }
 
 
-
-
+// TODO:
+// Make another function just for strings
 
 pair < vector<string>, vector<string>> processFasta(istream &istr) {
     vector<string> ids;
