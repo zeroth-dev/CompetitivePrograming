@@ -9,23 +9,28 @@
 #include <regex>
 using namespace std;
 
-uint64_t NcK(int n, int k) {
+uint64_t NcK(int n, int k, bool modMilion = false) {
     uint64_t answer = 1;
     if (k > n / 2) k = n - k;
 
     for (long long i = 1; i <= k; i++) {
         answer *= n - (uint64_t)(i - 1);
         answer /= i;
+        answer = modMilion ? answer % 1000000 : answer;
     }
     return answer;
 }
 
 
-uint64_t fact(int n){
+uint64_t fact(int n, bool modMilion = false){
     if(n <= 1){
         return 1;
     }else{
-        return n * fact(n-1);
+        if (modMilion){
+            return n * (fact(n-1) % 1000000);
+        }else{
+            return n * fact(n-1);
+        }
     }
 }
 
@@ -174,6 +179,8 @@ std::map<std::string, std::string> DNACodon;
 void initDNACodon(); 
 std::map<std::string, double> AminoMassTable;
 void initAminoMassTable();
+
+
 string RNA2prot(string RNA) {
     string prot = "";
     initRNACodon();
@@ -187,7 +194,19 @@ string RNA2prot(string RNA) {
     }
     return prot;
 }
-
+std::string DNA2prot(std::string DNA) {
+    std::string prot = "";
+    initDNACodon();
+    for (int i = 0; i < DNA.size(); i+=3) {
+        std::string dna = "aaa";
+        dna[0] = DNA[i];
+        dna[1] = DNA[i + 1];
+        dna[2] = DNA[i + 2];
+        if (DNACodon[dna] == "Stop") break;
+        prot.append(DNACodon[dna]);
+    }
+    return prot;
+}
 vector<int> findSubstring(string str, string substr) {
     vector<int> indexes;
     int position = 0;
@@ -343,6 +362,124 @@ std::vector<std::pair<int, int>> findReversePalin(std::string DNA){
     }
     return result;
 }
+
+std::vector<std::string> proteinCandidates(std::string dna){
+    std::vector<std::string> candidates;
+    std::string reverse = reverseComplementDNA(dna);
+    initDNACodon();
+    for(int i = 0; i+2 < dna.size(); i++){
+        std::string triplet = "aaa";
+        triplet[0] = dna[i];
+        triplet[1] = dna[i+1];
+        triplet[2] = dna[i+2];
+        if (triplet == "ATG"){
+            std::string protein = "";
+            protein.append(DNACodon["ATG"]);
+            for (int j = i+3; j < dna.size(); j+=3){
+                std::string triplet = "aaa";
+                triplet[0] = dna[j];
+                triplet[1] = dna[j+1];
+                triplet[2] = dna[j+2];
+                if(DNACodon[triplet] == "Stop"){
+                    if(std::find(candidates.begin(), candidates.end(), protein) == candidates.end())
+                        candidates.push_back(protein);
+                    break;
+                }
+                protein.append(DNACodon[triplet]);
+            }
+        }
+    }
+    for(int i = 0; i+2 < dna.size(); i++){
+        std::string triplet = "aaa";
+        triplet[0] = reverse[i];
+        triplet[1] = reverse[i+1];
+        triplet[2] = reverse[i+2];
+        if (triplet == "ATG"){
+            std::string protein = "";
+            protein.append(DNACodon["ATG"]);
+            for (int j = i+3; j < dna.size(); j+=3){
+                std::string triplet = "aaa";
+                triplet[0] = reverse[j];
+                triplet[1] = reverse[j+1];
+                triplet[2] = reverse[j+2];
+                if(DNACodon[triplet] == "Stop"){
+                    if(std::find(candidates.begin(), candidates.end(), protein) == candidates.end())
+                        candidates.push_back(protein);
+                    break;
+                }
+                protein.append(DNACodon[triplet]);
+            }
+        }
+    }
+
+
+
+    return candidates;
+}
+
+std::string splicedProtein(std::vector<std::string> totalDNA){
+    std::string encodingDNA = totalDNA[0];
+    for(int i = 1; i < totalDNA.size(); i++){
+        int location = encodingDNA.find(totalDNA[i]);
+        if(location != std::string::npos){
+            int size = totalDNA[i].size();
+            auto firstPart = 
+            encodingDNA = encodingDNA.substr(0, location).append(encodingDNA.substr(location+size, totalDNA.size()-size-location));
+        }
+    }
+    
+    return DNA2prot(encodingDNA);
+}
+
+std::vector<int> longestIncSubseq(std::vector<int>){
+    return std::vector<int>(5);
+}
+
+std::vector<int> longestDecSubseq(std::vector<int>){
+    return std::vector<int>(5);
+}
+
+// Not done, something is wrong
+std::string superString(std::vector<std::string> allDNA){
+    std::string dnaSequence = allDNA[0];
+    for(int i = 1; i < allDNA.size(); i++){
+        std::string temp = allDNA[i];
+        for(int j = temp.size(); j>temp.size()/2; j--){
+            if(j > dnaSequence.size() ) continue;
+            if(dnaSequence.find(temp.substr(0, temp.size()))!= std::string::npos) break;
+            if(temp.substr(0, j) == dnaSequence.substr(dnaSequence.size()-j, j)){
+                dnaSequence.append(temp.substr(j, temp.size()-j));
+                break;
+            }if(j == temp.size()/2+1){
+                dnaSequence.append(temp);
+            }
+            
+        }
+        //cout << endl <<"dna sequence: " << endl << dnaSequence << endl << endl;
+    }
+    return dnaSequence;
+}
+
+// TODO 
+// Implement BigNumbers
+
+double numberOfPerfectMatchings(std::string rna){
+    double A = 0, G = 0;
+    for (auto it : rna){
+        if (it == 'A') A++;
+        else if (it == 'G') G++;
+    }
+    cout << "A: " << A << " G: " << G << endl;
+    cout << (double)fact(A) << endl << (double)fact(G) << endl;
+    return (double)fact(A)*(double)fact(G);
+}
+
+int numberOfPartialPermutations(int n, int k){
+    cout << (fact(n, true) % 1000000) << endl;
+    cout << (NcK(n, k) % 1000000) << endl;
+    return (fact(n, true) % 1000000) * (NcK(n, k) % 1000000) % 1000000;
+}
+
 
 
 void initAminoMassTable(){

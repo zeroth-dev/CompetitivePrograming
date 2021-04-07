@@ -2,13 +2,14 @@
 #include <algorithm>
 #include <istream>
 #include "Functions.hpp"
-#include "Networking.hpp"
+//#include "Networking.hpp"
+#include "BigInteger.h"
 
 pair < vector<string>, vector<string>> processFasta(istream &istr);
 int main(int argc, char** argv) {
     std::string filename;
     if (argc == 1)
-        filename = "../datasets/rosalind_mrna.txt";
+        filename = "../datasets/rosalind_pper.txt";
     else if (argc == 2)
         filename = argv[1];
     else{
@@ -21,9 +22,12 @@ int main(int argc, char** argv) {
         std::cout << "failed to open " << filename << '\n';
     }
     else {
-        std::string codon;
-        istrm >> codon;
-        std::cout << RNACombinations(codon) << std::endl;
+        BigInteger a("11133333333333555555555555");
+        BigInteger b("99999999999999999999999999");
+        std::cout << a << std::endl << b++ << std:: endl;
+        std::cout << ++a << std::endl << b << std:: endl;
+        
+        std::cout << a+b << std::endl;
         
     }
     istrm.close();
@@ -45,7 +49,7 @@ pair < vector<string>, vector<string>> processFasta(istream &istr) {
     string line;
     vector<string> dnaStrings;
     while (getline(istr, line)) {
-        if (line.find("Rosalind") != string::npos) {
+        if (line.find(">") != string::npos) {
             // Save the DNA strand
             string DNAstrand = "";
             for (auto it : dnaStrings) {
