@@ -139,10 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BigInteger.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Functions.hpp" />
+    <ClInclude Include="AlgoritmicHeights.hpp" />
+    <ClInclude Include="BigInteger.h" />
+    <ClInclude Include="BioStronghold.hpp" />
+    <ClInclude Include="Networking.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

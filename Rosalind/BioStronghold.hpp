@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <math.h>
 #include <regex>
+#include "BigInteger.h"
 using namespace std;
 
 uint64_t NcK(int n, int k, bool modMilion = false) {
@@ -16,7 +17,6 @@ uint64_t NcK(int n, int k, bool modMilion = false) {
     for (long long i = 1; i <= k; i++) {
         answer *= n - (uint64_t)(i - 1);
         answer /= i;
-        answer = modMilion ? answer % 1000000 : answer;
     }
     return answer;
 }
@@ -474,10 +474,46 @@ double numberOfPerfectMatchings(std::string rna){
     return (double)fact(A)*(double)fact(G);
 }
 
-int numberOfPartialPermutations(int n, int k){
-    cout << (fact(n, true) % 1000000) << endl;
-    cout << (NcK(n, k) % 1000000) << endl;
-    return (fact(n, true) % 1000000) * (NcK(n, k) % 1000000) % 1000000;
+// Redo once NcK is done for BigInteger class and mod is properly done
+// Have to fix multiplication when size of numbers differs a lot
+// Fix long multiplication
+// code: pper
+BigInteger numberOfPartialPermutations(int n, int k){
+    auto t = NcK(n, k);
+    auto p = BigInteger::fact(k);
+    auto x = t * p;
+    auto l = BigInteger::fact(k) * NcK(n, k);
+    auto y = BigInteger::longMultiplication(t, p);
+    return (BigInteger::fact(k) * NcK(n, k)) % 1000000;
+}
+
+// code: tree
+int edgesToCompleteTree(std::vector<std::vector<int>> adjList) {
+    int n = adjList.size();
+    int missingEdges = 0;
+    vector<int> checked(n, -1);
+    for (int i = 0; i < n; ++i) {
+        if (checked[i] != -1) continue;
+        checked[i] = 0;
+        std::queue<int> q;
+        q.push(i);
+        int dist = 0;
+        while (!q.empty()) {
+            int curr = q.front();
+            q.pop();
+            for (int j = 0; j < n; ++j) {
+                if (adjList[curr][j] && checked[j] == -1) {
+                    q.push(j);
+                    ++dist;
+                    checked[j] = 0;
+                }
+               
+            }
+        }
+        if (dist != n-1) ++missingEdges;
+        else ++dist;
+    }
+    return missingEdges-1;
 }
 
 

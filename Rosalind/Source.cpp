@@ -1,15 +1,15 @@
 #include <fstream>
 #include <algorithm>
 #include <istream>
-#include "Functions.hpp"
+#include "BioStronghold.hpp"
+#include "AlgoritmicHeights.hpp"
 //#include "Networking.hpp"
-#include "BigInteger.h"
 
 pair < vector<string>, vector<string>> processFasta(istream &istr);
 int main(int argc, char** argv) {
     std::string filename;
     if (argc == 1)
-        filename = "../datasets/rosalind_pper.txt";
+        filename = "AlgorithmicHeights/rosalind_hea.txt";
     else if (argc == 2)
         filename = argv[1];
     else{
@@ -22,13 +22,37 @@ int main(int argc, char** argv) {
         std::cout << "failed to open " << filename << '\n';
     }
     else {
-        BigInteger a("11133333333333555555555555");
-        BigInteger b("99999999999999999999999999");
-        std::cout << a << std::endl << b++ << std:: endl;
-        std::cout << ++a << std::endl << b << std:: endl;
-        
-        std::cout << a+b << std::endl;
-        
+        /* input for adjacency list
+        int n, m, ver1, ver2;
+        istrm >> n >> m;
+        std::multimap<int, int> adjList;
+        for (int i = 0; i < m; ++i) {
+            istrm >> ver1 >> ver2;
+            adjList.insert({ ver1, ver2 });
+        }
+        if (adjList.rbegin()->first != n) {
+            adjList.insert({ n, 0 });
+        }
+        if (adjList.begin()->first != 1) {
+            adjList.insert({ 1, 0 });
+        }
+        auto output = bfs(adjList);
+        for (auto it : output) {
+            std::cout << it << " ";
+        }
+        */
+
+        int n, temp;
+        std::vector<int> input;
+        istrm >> n;
+        for (int i = 0; i < n; ++i) {
+            istrm >> temp;
+            input.push_back(temp);
+        }
+        auto output = hea(input);
+        for (auto it : output) {
+            std::cout << it << " ";
+        }
     }
     istrm.close();
 	return 0;
