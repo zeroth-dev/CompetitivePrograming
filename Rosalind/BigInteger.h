@@ -5,12 +5,15 @@
 #include <string>
 #include <istream>
 #include <ostream>
-
+#include <limits>
 
 class BigInteger{
 public:
     BigInteger(std::string const& num);
     BigInteger(int num);
+    BigInteger(long long num);
+    BigInteger(uint64_t num);
+
 private:
     std::string number;
 public:
@@ -29,6 +32,7 @@ public:
     friend std::istream &operator >> (std::istream &strm, BigInteger &bi);
     friend std::ostream &operator << (std::ostream &strm, BigInteger bi);
    
+    int getInt() { return 0; } // TBD
     int size() const { return this->number.size(); }
     static BigInteger fact(BigInteger n);
 };

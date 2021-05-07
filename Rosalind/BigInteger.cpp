@@ -13,6 +13,10 @@ BigInteger::BigInteger(std::string const& num){
 }
 BigInteger::BigInteger(int num) : number(std::to_string(num)) {}
 
+BigInteger::BigInteger(long long num) : number(std::to_string(num)) {}
+
+BigInteger::BigInteger(uint64_t num) : number(std::to_string(num)) {}
+
 int BigInteger::operator[](int idx) const{
     // Exception handling TODO
     return (int)this->number[idx]-48;
@@ -121,9 +125,12 @@ BigInteger operator%(BigInteger lhs, const BigInteger rhs)
 }
 
 BigInteger operator*(const BigInteger& lhs, const BigInteger& rhs) {
-    if (lhs.size() < 9 && rhs.size() < 9) { return std::stoi(lhs.number) * std::stoi(rhs.number); }
+    if (lhs.size() < 9 && rhs.size() < 9) { 
+        auto l = std::stoll(lhs.number) * std::stoll(rhs.number);
+        return std::stoll(lhs.number) * std::stoll(rhs.number); 
+    }
 
-    if (lhs.size() <= 7 || rhs.size() <= 7) {
+    if (lhs.size() <= 5 || rhs.size() <= 5) {
         
         return BigInteger::longMultiplication(lhs, rhs);
 

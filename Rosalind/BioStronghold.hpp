@@ -517,6 +517,142 @@ int edgesToCompleteTree(std::vector<std::vector<int>> adjList) {
 }
 
 
+BigInteger countingSubsets(int n, int mod) {
+    BigInteger res = 1;
+    BigInteger base = 2;
+    while (n > 0) {
+        if (n % 2) {
+            res = (base * res) % mod;
+        }
+        n >>= 1;
+        base = (base * base) % mod;
+    }
+    return res;
+
+}
+// We need to find A + B, A AND B, A - B, B - A, Ac, and Bc with sets A and B
+std::vector<std::vector<int>> setOperations(int size, std::vector<int> A, std::vector<int> B) {
+    std::vector<int> temp;
+    std::vector<std::vector<int>> output;
+    std::sort(A.begin(), A.end());
+    std::sort(B.begin(), B.end());
+    int i = 0, j = 0;
+    int n = A.size(), m = B.size();
+
+    // A + B
+    while (i < n || j < m) {
+        if (i == n) {
+            temp.push_back(B[j]);
+            ++j;
+        }
+        else if (j == m) {
+
+            temp.push_back(A[i]);
+            ++i;
+        }
+        else if (A[i] < B[j]) {
+            temp.push_back(A[i]);
+            ++i;
+        }
+        else if (A[i] > B[j]) {
+            temp.push_back(B[j]);
+            ++j;
+        }
+        else {
+            temp.push_back(A[i]);
+            ++i, ++j;
+        }
+    }
+
+
+    output.push_back(temp);
+    temp.clear();
+
+    i = 0, j = 0;
+    // A AND B
+    while (i < n && j < m) {
+
+        if (A[i] < B[j]) {
+            ++i;
+        }
+        else if (A[i] > B[j]) {
+            ++j;
+        }
+        else {
+            temp.push_back(A[i]);
+            ++i, ++j;
+        }
+    }
+
+    output.push_back(temp);
+    temp.clear();
+
+    i = 0, j = 0;
+    // A - B
+    while (i < n || j < m) {
+        if (i == n) break;
+        else if (j == m) {
+            temp.push_back(A[i]);
+            ++i;
+        }
+        else if (A[i] < B[j]) {
+            temp.push_back(A[i]);
+            ++i;
+        }
+        else if (A[i] > B[j]) {
+            ++j;
+        }
+        else {
+            ++i, ++j;
+        }
+
+    }
+
+    output.push_back(temp);
+    temp.clear();
+
+    i = 0, j = 0;
+
+    // B - A
+    while (i < n || j < m) {
+        if (i == n) {
+            temp.push_back(B[j]);
+            ++j;
+        }
+        else if (j == m) break;
+        else if (A[i] < B[j]) ++i;
+        else if (A[i] > B[j]) {
+            temp.push_back(B[j]);
+            ++j;
+        }
+        else {
+            ++i, ++j;
+        }
+    }
+
+    output.push_back(temp);
+    temp.clear();
+
+    i = 0, j = 0;
+    int counter = 1;
+    std::vector<int> tempB;
+    // Ac and Bc
+    while (counter <= size) {
+        if (i < n && A[i] == counter) {
+            ++i;
+        }
+        else temp.push_back(counter);
+        if (j < m && B[j] == counter) {
+            ++j;
+        }
+        else tempB.push_back(counter);
+        counter++;
+    }
+    output.push_back(temp);
+    output.push_back(tempB);
+
+    return output;
+}
 
 void initAminoMassTable(){
 
