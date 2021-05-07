@@ -17,7 +17,7 @@ private:
 	T _parent = NULL;
 	
 public:
-	T id() { return _id; }
+	T id() const { return _id; }
 	T parent() { return _parent; }
 	I distance = INF;
 
@@ -26,6 +26,10 @@ public:
 	bool operator==(const BasicNode& rhs) {
 		return _id == rhs._id;
 	}
+	
 };
-
+template <typename T, typename I = int>
+inline bool operator<(const BasicNode<T, I>& lhs, const BasicNode<T, I>& rhs) {
+	return lhs.id() < rhs.id();
+}
 #endif // BASICNODE_H

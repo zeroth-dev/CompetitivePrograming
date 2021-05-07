@@ -1,9 +1,9 @@
 
 #include <vector>
-#include "BasicNode.h"
 #include <map>
 #include <queue>
 #include <functional>
+#include "BasicNode.hpp"
 #ifndef BASICGRAPH_H
 #define BASICGRAPH_H
 
@@ -98,7 +98,7 @@ void BasicGraph<T, I>::BFS(T nodeID) {
 		q.pop();
 		auto range = _edges.equal_range(currNode);
 		for (auto it = range.first; it != range.second; ++it) {
-			loc = _location[it->first];
+			loc = _location[it->second.first.id()];
 			if (!visited[loc]) {
 				q.push(loc);
 				_nodes[loc].distance = _nodes[currNode].distance + 1;
@@ -113,7 +113,7 @@ void BasicGraph<T, I>::printDistances() {
 	auto nodes = _nodes;
 	std::sort(nodes.begin(), nodes.end(), 
 		[]( BasicNode<T, I> lhs,  BasicNode<T, I> rhs) -> bool {
-			return lhs.id() < rhs.id(); 
+			return (lhs < rhs); 
 		});
 	for (auto it : nodes) {
 		std::cout << "Distance to node " << it.id() << " is " << it.distance << std::endl;
