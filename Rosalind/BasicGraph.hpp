@@ -25,7 +25,7 @@ private:
 public:
 	void addNode(T& nodeID);
 	void removeNode(T& nodeID);
-	BasicNode<T, I> getNode(T& nodeID);
+	BasicNode<T, I> getNode(T nodeID);
 
 	void addDirectedEdge(T& nodeID1, T& nodeID2, I distance);
 	void addUndirectedEdge(T& nodeID1, T& nodeID2);
@@ -34,6 +34,8 @@ public:
 	void DFS(T nodeID);
 	int nodeNumber = 0;
 	void printDistances();
+	void resetDistances();
+	void resetAll();
 };
 
 template <typename T, typename I>
@@ -57,7 +59,7 @@ void BasicGraph<T, I>::removeNode(T& nodeID) {
 }
 
 template <typename T, typename I>
-BasicNode<T, I> BasicGraph<T, I>::getNode(T& nodeID) {
+BasicNode<T, I> BasicGraph<T, I>::getNode(T nodeID) {
 	return _nodes[_location[nodeID]];
 }
 
@@ -93,15 +95,21 @@ void BasicGraph<T, I>::BFS(T nodeID) {
 	q.push(loc);
 	visited[loc] = true;
 	_nodes[loc].distance = 0;
+	std::cout << "First node: " << _nodes[q.front()].id() << std::endl;
 	while (!q.empty()) {
 		auto currNode = q.front();
 		q.pop();
-		auto range = _edges.equal_range(currNode);
+
+		std::cout << "Current node: " << _nodes[currNode].id() << std::endl;
+		auto range = _edges.equal_range(_nodes[currNode]);
+
 		for (auto it = range.first; it != range.second; ++it) {
+			std::cout << "Current edge: " << it->first.id() << " > " << it->second.first.id() << " d: " << it->second.second << std::endl;
 			loc = _location[it->second.first.id()];
 			if (!visited[loc]) {
 				q.push(loc);
 				_nodes[loc].distance = _nodes[currNode].distance + 1;
+				std::cout << "Neighbour node: " << it->second.first.id() << " with distance: " << _nodes[loc].distance << std::endl; 
 				visited[loc] = true;
 			}
 		}
@@ -120,5 +128,21 @@ void BasicGraph<T, I>::printDistances() {
 
 	}
 }
+
+
+template <typename T, typename I>
+void BasicGraph<T, I>::resetDistances() {
+	for(auto &it:_nodes){
+		it.distance = INF;
+	}
+}
+
+
+template <typename T, typename I>
+void BasicGraph<T, I>::resetAll(){
+	_nodes.clear();
+	_edges.clear();
+	_location.clear();
+} 
 
 #endif // BASICGRAPH_H

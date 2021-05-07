@@ -1,0 +1,3 @@
+/home/user/projects/CompetitivePrograming/Rosalind/build/CMakeFiles/rebuild_cache.dir
+/home/user/projects/CompetitivePrograming/Rosalind/build/CMakeFiles/edit_cache.dir
+/home/user/projects/CompetitivePrograming/Rosalind/build/CMakeFiles/Rosalind.dir

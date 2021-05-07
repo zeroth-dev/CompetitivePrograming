@@ -33,7 +33,11 @@ std::vector<int> processSet(istream& istrm);
 int main(int argc, char** argv) {
     std::string filename;
     if (argc == 1)
+    #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
         filename = "AlgorithmicHeights/rosalind_bfs.txt";
+    #else
+        filename = "../AlgorithmicHeights/rosalind_bfs.txt";
+    #endif
 //        filename = "AlgorithmicHeights/rosalind_dij.txt";
     else if (argc == 2)
         filename = argv[1];
@@ -62,8 +66,14 @@ int main(int argc, char** argv) {
             }
             graph.BFS(1);
             graph.printDistances();
+            
         }
-        
+        auto nodes = graph.nodes();
+        for(auto it : nodes){
+            std::cout << "Node: " << it.id() << std::endl;
+        }
+        std::cout << "Node 1: " << graph.getNode(1).id();
+
         /*
         int n, temp;
         istrm >> n;

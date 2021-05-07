@@ -1,0 +1,1 @@
+/usr/bin/c++   -lcurlpp -lcurl -lstdc++   CMakeFiles/Rosalind.dir/Source.cpp.o CMakeFiles/Rosalind.dir/BigInteger.cpp.o  -o Rosalind  -lcurl -lcurlpp 

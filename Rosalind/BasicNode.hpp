@@ -1,6 +1,6 @@
 
 #include <vector>
-#include <limits>
+#include <climits>
 #include <iostream>
 #ifndef BASICNODE_H
 #define BASICNODE_H
