@@ -11,8 +11,9 @@ template <typename T, typename I = int>
 class BasicGraph 
 {
 #ifndef INF
-#define INF std::numeric_limits<I>::infinity();
-#endif
+#define INF std::numeric_limits<I>::max()
+#endif // INF
+
 public:
 	BasicGraph(int n);
 	BasicGraph() {};
@@ -20,7 +21,7 @@ public:
 private:
 	std::vector<BasicNode<T, I>> _nodes;
 	std::multimap<BasicNode<T, I>, std::pair< BasicNode<T, I>, I>> _edges;
-	std::map<T, int> _location; // needs testing against vectod<pair<T, int>>
+	std::map<T, int> _location; // needs testing against vector<pair<T, int>>
 	std::vector<std::pair<T, int>> _loc;
 public:
 	void addNode(T& nodeID);
@@ -33,6 +34,7 @@ public:
 	void BFS(T nodeID);
 	void DFS(T nodeID);
 	int nodeNumber = 0;
+	std::vector<I> getDistances();
 	void printDistances();
 	void resetDistances();
 	void resetAll();
@@ -95,25 +97,39 @@ void BasicGraph<T, I>::BFS(T nodeID) {
 	q.push(loc);
 	visited[loc] = true;
 	_nodes[loc].distance = 0;
-	std::cout << "First node: " << _nodes[q.front()].id() << std::endl;
 	while (!q.empty()) {
 		auto currNode = q.front();
 		q.pop();
 
-		std::cout << "Current node: " << _nodes[currNode].id() << std::endl;
 		auto range = _edges.equal_range(_nodes[currNode]);
 
 		for (auto it = range.first; it != range.second; ++it) {
-			std::cout << "Current edge: " << it->first.id() << " > " << it->second.first.id() << " d: " << it->second.second << std::endl;
 			loc = _location[it->second.first.id()];
 			if (!visited[loc]) {
 				q.push(loc);
 				_nodes[loc].distance = _nodes[currNode].distance + 1;
-				std::cout << "Neighbour node: " << it->second.first.id() << " with distance: " << _nodes[loc].distance << std::endl; 
 				visited[loc] = true;
 			}
 		}
 	}
+}
+
+template <typename T, typename I>
+std::vector<I> BasicGraph<T, I>::getDistances() {
+	auto nodes = _nodes;
+	std::sort(nodes.begin(), nodes.end(),
+		[](BasicNode<T, I> lhs, BasicNode<T, I> rhs) -> bool {
+			return (lhs < rhs);
+		});
+	std::vector<I> dists;
+	for (auto it : nodes) {
+		if (it.distance == INF) {
+			dists.push_back(-1);
+		}else
+		dists.push_back(it.distance);
+
+	}
+	return dists;
 }
 
 template <typename T, typename I>
@@ -124,7 +140,10 @@ void BasicGraph<T, I>::printDistances() {
 			return (lhs < rhs); 
 		});
 	for (auto it : nodes) {
-		std::cout << "Distance to node " << it.id() << " is " << it.distance << std::endl;
+		if (it.distance == INF) {
+			std::cout << "Distance to node " << it.id() << " is " << -1 << std::endl;
+		}
+		else std::cout << "Distance to node " << it.id() << " is " << it.distance << std::endl;
 
 	}
 }

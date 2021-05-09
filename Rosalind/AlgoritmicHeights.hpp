@@ -67,7 +67,7 @@ std::vector<int> deg(std::vector<std::vector<int>> adjList) {
 	return degree;
 }
 // Count the number of swaps
-int ins(vector<int> unsortedArray) {
+int ins(std::vector<int> unsortedArray) {
 	int countSwaps=0;
 	for (int i = 1; i < unsortedArray.size(); ++i) {
 		int k = i;
@@ -81,7 +81,7 @@ int ins(vector<int> unsortedArray) {
 }
 
 template<typename T>
-vector<T> insertionSort(vector<T> unsortedArray) {
+std::vector<T> insertionSort(std::vector<T> unsortedArray) {
 	
 	for (int i = 1; i < unsortedArray.size(); ++i) {
 		int k = i;
@@ -133,7 +133,7 @@ std::vector<int> ddeg(std::multimap<int, int> adjList) {
 }
 
 std::vector<int> maj(std::vector<std::vector<int>> lists) {
-	vector<int> solution;
+	std::vector<int> solution;
 	for (int i = 0; i < lists.size(); ++i) {
 		std::sort(lists[i].begin(), lists[i].end());
 		int currNum = lists[i][0];
@@ -287,27 +287,29 @@ int cc(std::multimap<int, int> adjList, int nodeNumber) {
 	return islands;
 }
 
-// Here we have to build a binary heap
-std::vector<int> hea(vector<int> input) {
-	vector<int> heap;
-	heap.push_back(0);
-	for (int i = 0; i < input.size(); ++i) {
-		heap.push_back(input[i]);
-		int j = heap.size() - 1;
-		while (j > 1 && heap[j] > heap[j / 2]) {
-			std::swap(heap[j], heap[j / 2]);
-			j /= 2;
-		}
-	}
-	return heap;
-} 
-
-void hea(vector<int> &input, int size) {
-	int j = input.size()/2;
-	for (; j > 0; --j) {
-
+void maxHeapify(std::vector<int>& input, int top, int size) {
+	int left = 2 * top + 1;
+	int right = 2 * top + 2;
+	int largest;
+	if (left < size && input[left] > input[top])
+		largest = left;
+	else largest = top;
+	if (right < size && input[right] > input[largest])
+		largest = right;
+	if (largest != top) {
+		std::swap(input[top], input[largest]);
+		maxHeapify(input, largest, size);
 	}
 }
+
+// Here we have to build a binary heap
+std::vector<int> hea(std::vector<int> input) {
+	
+	for (int i = input.size() / 2; i > 0; --i) {
+		maxHeapify(input, i-1, input.size());
+	}
+	return input;
+} 
 
 // Merge sort
 template <typename T>
@@ -423,30 +425,29 @@ int dag(std::multimap<int, int> adjList, int nodeNumber) {
 	return 1;
 }
 
-std::vector<int> dij(std::multimap<int, std::pair<int, int>> adjList, int nodeNumber) {
-	std::vector<int> visited(nodeNumber + 1, 0);
-	std::vector<int> dist(nodeNumber + 1, -1);
-	dist[0] = 0;
+std::vector<int> dij(std::multimap<int, std::pair<int, int>> adjList, int nodeNumber, int startNode) {
+	std::vector<int> visited(nodeNumber, 0);
+	std::vector<int> dist(nodeNumber, -1);
+	
 
 	auto cmp = [](std::pair<int, int> left, std::pair<int, int> right) {return left.second > right.second; };
 	std::priority_queue <std::pair<int, int>, std::vector<std::pair<int, int>>, decltype(cmp)> dij_que(cmp);
-	dij_que.push({ 1, 0 });
-	int dbg = 0;
-	dist[1] = 0;
+	dij_que.push({ startNode, 0 });
+	dist[startNode-1] = 0;
 	while (!dij_que.empty()) {
 		auto currNode = dij_que.top();
 		dij_que.pop();
-		if (visited[currNode.first]) continue;
-		visited[currNode.first] = 1;
+		if (visited[currNode.first-1]) continue;
+		visited[currNode.first-1] = 1;
 
 		auto range = adjList.equal_range(currNode.first);
 		for (auto it = range.first; it != range.second; ++it) {
-			if (!visited[it->second.first]) {
+			if (!visited[it->second.first-1]) {
 			
-				int distance = dist[currNode.first] + it->second.second;
-				if (distance < dist[it->second.first] || dist[it->second.first] == -1)
-					dist[it->second.first] = distance;
-				dij_que.push({ it->second.first, dist[it->second.first] });
+				int distance = dist[currNode.first-1] + it->second.second;
+				if (distance < dist[it->second.first-1] || dist[it->second.first-1] == -1)
+					dist[it->second.first-1] = distance;
+				dij_que.push({ it->second.first, dist[it->second.first-1] });
 			}
 		}
 	}
@@ -454,16 +455,11 @@ std::vector<int> dij(std::multimap<int, std::pair<int, int>> adjList, int nodeNu
 	return dist;
 }
 
-// not done properly, takes too much time
 std::vector<int> hs(std::vector<int> input) {
-	hea(input, input.size());
+	input = hea(input);
 	for (int i = input.size() - 1; i > 0; --i) {
-		auto start = high_resolution_clock::now();
 		std::swap(input[0], input[i]);
-		hea(input, i);
-		auto stop = high_resolution_clock::now();
-		auto duration = duration_cast<microseconds>(stop - start);
-		//cout << "Time passed: " << duration.count() << endl;
+		maxHeapify(input, 0, i-1);
 	}
 	return input;
 }
@@ -518,27 +514,102 @@ int nwc(std::multimap<int, std::pair<int, int>> adjList, int nodeNumber) {
 	return -1;
 }
 
-std::vector<int> ts(std::multimap<int, int> adjList, int nodeNumber) {
+void dfsVisit(std::multimap<int, int> &adjList, std::vector<int>& visited, int& time, std::vector<int>& visitTime, std::vector<int>& endTime, int node, std::vector<int> &topologicallySorted) {
+	++time;
+	visitTime[node] = time;
+	auto range = adjList.equal_range(node + 1);
+	visited[node] = 1;
+	for (auto it = range.first; it != range.second; ++it) {
+		if (!visited[it->second - 1]) {
+			dfsVisit(adjList, visited, time, visitTime, endTime, it->second-1, topologicallySorted);
+		}
+	}
+	++time;
+	endTime[node] = time;
+	topologicallySorted.push_back(node+1);
+}
 
-	std::stack<int> nodes;
-	std::vector<int> visited(nodeNumber + 1, 0);
-	std::vector<int> visitedTime(nodeNumber + 1, 0);
-	std::vector<int> FinishedTime(nodeNumber + 1, 0);
-	nodes.push(1);
-	visited[1] = 1;
+std::vector<int> dfs(std::multimap<int, int> adjList, int nodeNumber, std::vector<int> &visitTime, std::vector<int> &endTime) {
+	std::vector<int> visited(nodeNumber, 0);
+	std::vector<int> topologicallySorted;
 	int time = 0;
-	while (!nodes.empty()) {
-		int currNode = nodes.top();
-		nodes.pop();
-		auto range = adjList.equal_range(currNode);
+	for (int i = 0; i < nodeNumber; ++i) {
+		if (!visited[i]) {
+			dfsVisit(adjList, visited, time, visitTime, endTime, i, topologicallySorted);
+		}
+	}
+	std::reverse(topologicallySorted.begin(), topologicallySorted.end());
+	return topologicallySorted;
+}
+
+std::vector<int> ts(std::multimap<int, int> adjList, int nodeNumber) {
+	std::vector<int> visitTime(nodeNumber);
+	std::vector<int> endTime(nodeNumber);
+	auto sorted = dfs(adjList, nodeNumber, visitTime, endTime);
+	return sorted;
+}
+
+std::vector<int> par3(std::vector<int> input) {
+	int first = input[0];
+	std::deque<int> newList;
+	std::vector<int> output;
+	int same = 0;
+	for (auto it : input) {
+		if (it < first) newList.push_front(it);
+		else if (it > first) newList.push_back(it);
+		else ++same;
+	}
+	bool less = true;
+	for (auto it : newList) {
+		if (less && it > first) {
+			less = false;
+			for (int i = 0; i < same; ++i) {
+				output.push_back(first);
+			}
+		}
+		output.push_back(it);
+	}
+	return output;
+}
+
+int cte(std::multimap<int, std::pair<int, int>> adjList, int nodeNumber, int edgeStartNode, int edgeEndNode) {
+	auto dist = dij(adjList, nodeNumber, edgeEndNode);
+	if (dist[edgeStartNode - 1] == -1) return -1;
+	else {
+		auto range = adjList.equal_range(edgeStartNode);
 		for (auto it = range.first; it != range.second; ++it) {
-			if (visited[it->second])
-				int dbg = 0;
-			else {
-				nodes.push(it->second);
-				visited[it->second] = 1;
+			if (it->second.first == edgeEndNode) {
+				return dist[edgeStartNode - 1] + it->second.second;
 			}
 		}
 	}
-	return visited;
+}
+
+std::multimap<int, int> dist2Unity(std::multimap<int, std::pair<int, int>> &adjList) {
+	std::multimap <int, int> undirected;
+	for (auto it : adjList) {
+		undirected.insert({ it.first, it.second.first });
+	}
+	return undirected;
+}
+
+std::vector<int> sdag(std::multimap<int, std::pair<int, int>> adjList, int nodeNumber) {
+	std::vector<int> distances(nodeNumber, INT_MAX);
+	std::vector<bool> visited(nodeNumber);
+	std::vector<int> sorted = ts(dist2Unity(adjList), nodeNumber);
+	distances[0] = 0;
+	bool start = false;
+	for (auto it : sorted) {
+		if (it != 1 && !start)continue;
+		if (it == 1) start = true;
+		auto range = adjList.equal_range(it);
+		
+		for (auto it2 = range.first; it2 != range.second; ++it2) {
+			int dist = distances[it - 1] + it2->second.second;
+			if (dist < distances[it2->second.first-1]) {
+				distances[it2->second.first-1] = dist;
+			}
+		}
+	}
+	return distances;
 }
