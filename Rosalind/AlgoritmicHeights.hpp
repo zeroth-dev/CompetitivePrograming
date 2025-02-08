@@ -613,3 +613,21 @@ std::vector<int> sdag(std::multimap<int, std::pair<int, int>> adjList, int nodeN
 	}
 	return distances;
 }
+
+int inv(std::vector<int> inputArray)
+{
+	// BAD SOLUTION
+	int inverseNumber = 0;
+	for (int i = 0; i < inputArray.size(); ++i)
+	{
+		int currNum = inputArray[i];
+		for (int j = i + 1; j < inputArray.size(); ++j)
+		{
+			if (currNum > inputArray[j])
+			{
+				inverseNumber++;
+			}
+		}
+	}
+	return inverseNumber;
+}

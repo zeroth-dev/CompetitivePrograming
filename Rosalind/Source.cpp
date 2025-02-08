@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
     std::string filename;
     if (argc == 1)
     #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-        filename = "AlgorithmicHeights/rosalind_sdag.txt";
+        filename = "AlgorithmicHeights/rosalind_inv.txt";
     #else
         filename = "../AlgorithmicHeights/rosalind_bfs.txt";
     #endif
@@ -30,20 +30,10 @@ int main(int argc, char** argv) {
         std::cout << "failed to open " << filename << '\n';
     }
     else {
-        int nodeNumber;
-        //auto adjList = directedAdjListUnity(istrm, nodeNumber);
-        //auto output = ts(adjList, nodeNumber);
-        
-        auto adjList = directedAdjList(istrm, nodeNumber);
-        auto output = sdag(adjList, nodeNumber);
-        for (auto it : output) {
-            if (it == INT_MAX) {
-                std::cout << "x ";
-            }
-            else {
-                std::cout << it << " ";
-            }
-        }
+        int n;
+        istrm >> n;
+        auto input = list<int>(istrm);
+        std::cout <<"Number of inverses: " << inv(input) << std::endl;
     }
     istrm.close();
 	return 0;
