@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rosalind", "Rosalind\Rosalind.vcxproj", "{F5B1A003-080A-427C-A8D2-3B37CE30B62B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestingResults", "TestingResults\TestingResults.vcxproj", "{39E77699-317D-43BA-AEAE-523E1F93E629}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EulerProject", "EulerProject\EulerProject.vcxproj", "{A452032F-0779-475F-BF0D-87CF63CD9606}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{39E77699-317D-43BA-AEAE-523E1F93E629}.Release|x64.Build.0 = Release|x64
 		{39E77699-317D-43BA-AEAE-523E1F93E629}.Release|x86.ActiveCfg = Release|Win32
 		{39E77699-317D-43BA-AEAE-523E1F93E629}.Release|x86.Build.0 = Release|Win32
+		{A452032F-0779-475F-BF0D-87CF63CD9606}.Debug|x64.ActiveCfg = Debug|x64
+		{A452032F-0779-475F-BF0D-87CF63CD9606}.Debug|x64.Build.0 = Debug|x64
+		{A452032F-0779-475F-BF0D-87CF63CD9606}.Debug|x86.ActiveCfg = Debug|Win32
+		{A452032F-0779-475F-BF0D-87CF63CD9606}.Debug|x86.Build.0 = Debug|Win32
+		{A452032F-0779-475F-BF0D-87CF63CD9606}.Release|x64.ActiveCfg = Release|x64
+		{A452032F-0779-475F-BF0D-87CF63CD9606}.Release|x64.Build.0 = Release|x64
+		{A452032F-0779-475F-BF0D-87CF63CD9606}.Release|x86.ActiveCfg = Release|Win32
+		{A452032F-0779-475F-BF0D-87CF63CD9606}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
